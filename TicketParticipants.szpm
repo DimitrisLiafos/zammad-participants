@@ -1,6 +1,6 @@
 {
   "name": "TicketParticipants",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "vendor": "dliafos",
   "license": "proprietary",
   "url": "https://github.com/dliafos/zammad-participants",
@@ -68,11 +68,11 @@
       "permission": "644"
     },
     {
-      "location": "db/addon/ticket_participants/20261111130000_ticket_participants_overview.rb",
+      "location": "db/addon/ticket_participants/20261111125000_ticket_participants_per_group.rb",
       "permission": "644"
     },
     {
-      "location": "db/addon/ticket_participants/20261111140000_ticket_participants_per_group.rb",
+      "location": "db/addon/ticket_participants/20261111130000_ticket_participants_overview.rb",
       "permission": "644"
     },
     {

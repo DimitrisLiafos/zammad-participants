@@ -1,3 +1,5 @@
+# Must run before the overview migration: the participants condition of that
+#   overview depends on the column added here.
 class TicketParticipantsPerGroup < ActiveRecord::Migration[8.0]
   def self.up
     if !ActiveRecord::Base.connection.column_exists?(:groups, :participants_enabled)
@@ -52,7 +54,7 @@ class TicketParticipantsPerGroup < ActiveRecord::Migration[8.0]
   end
 
   def self.down
-    ObjectManager::Attribute.find_by(object_lookup_id: ObjectLookup.by_name('Group'), name: 'participants_enabled')&.destroy
+    ObjectManager::Attribute.find_by(object_lookup_id: ObjectLookup.by_name('Group'), name: 'participants_enabled')&.delete
     remove_column :groups, :participants_enabled
     Group.reset_column_information
   end
