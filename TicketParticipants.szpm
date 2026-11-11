@@ -12,6 +12,10 @@
   ],
   "files": [
     {
+      "location": "app/assets/javascripts/app/lib/app_post/ticket_participants.coffee",
+      "permission": "644"
+    },
+    {
       "location": "app/controllers/ticket_participants_controller.rb",
       "permission": "644"
     },
@@ -45,6 +49,10 @@
     },
     {
       "location": "db/addon/ticket_participants/20261110120000_ticket_participants_setup.rb",
+      "permission": "644"
+    },
+    {
+      "location": "lib/ticket_participants/notification_email_extension.rb",
       "permission": "644"
     },
     {

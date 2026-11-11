@@ -42,7 +42,8 @@ class Transaction::TicketParticipantNotification
     return false if already_addressed_emails.include?(user.email.downcase)
     return false if user.mail_delivery_failed_blocked_days.positive?
 
-    true
+    # A participation may outlive the role it was granted for.
+    TicketPolicy.new(user, ticket).show?.present?
   end
 
   def excluded_user_ids

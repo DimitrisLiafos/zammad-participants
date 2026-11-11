@@ -182,6 +182,16 @@ RSpec.describe Transaction::TicketParticipantNotification, type: :model do
     end
   end
 
+  context 'when the participant lost the customer role' do
+    before { participant.update!(roles: Role.where(name: 'Agent')) }
+
+    it 'does not notify' do
+      perform
+
+      expect(recipients).to be_empty
+    end
+  end
+
   context 'when mail delivery to the participant failed recently' do
     before { participant.update!(preferences: { mail_delivery_failed: true, mail_delivery_failed_data: Time.current }) }
 

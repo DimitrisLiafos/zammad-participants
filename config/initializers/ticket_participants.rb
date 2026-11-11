@@ -10,4 +10,6 @@ Rails.application.reloader.to_prepare do
 
   TicketPolicy.prepend TicketParticipants::TicketPolicyExtension
   TicketPolicy::BaseScope.prepend TicketParticipants::TicketPolicyScopeExtension
+
+  Ticket::PerformChanges::Action::NotificationEmail.prepend TicketParticipants::NotificationEmailExtension
 end

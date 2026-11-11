@@ -31,6 +31,18 @@ RSpec.describe 'Ticket participants', authenticated_as: :user, type: :request do
       end
     end
 
+    context 'when user is an agent elsewhere but only the customer of this ticket' do
+      let(:user) { create(:agent_and_customer) }
+
+      before { ticket.update!(customer: user) }
+
+      it 'lists participants without their email' do
+        get path, as: :json
+
+        expect(json_response.first).not_to have_key('email')
+      end
+    end
+
     context 'when user is a participant' do
       let(:user) { participant }
 

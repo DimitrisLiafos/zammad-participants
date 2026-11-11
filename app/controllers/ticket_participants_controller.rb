@@ -41,7 +41,13 @@ class TicketParticipantsController < ApplicationController
       fullname:   participant.user.fullname,
       created_at: participant.created_at,
     }
-    data[:email] = participant.user.email if current_user.permissions?('ticket.agent')
+    data[:email] = participant.user.email if agent_of_ticket?
     data
+  end
+
+  def agent_of_ticket?
+    return @agent_of_ticket if defined?(@agent_of_ticket)
+
+    @agent_of_ticket = TicketPolicy.new(current_user, ticket).agent_read_access?
   end
 end
