@@ -59,7 +59,7 @@ RSpec.describe 'Participants per group' do # rubocop:disable RSpec/DescribeClass
     end
 
     it 'hides the participants from the clients' do
-      expect(ticket.reload.attributes_with_association_ids).to include('participant_user_ids' => [])
+      expect(ticket.reload.attributes_with_association_ids).to include('participant_user_ids' => [], 'participants_enabled' => false)
     end
   end
 

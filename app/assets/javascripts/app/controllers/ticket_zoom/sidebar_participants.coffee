@@ -1,6 +1,6 @@
 class SidebarParticipants extends App.Controller
   sidebarItem: =>
-    return if !App.Group.findNative(@ticket.group_id)?.participants_enabled
+    return if !@ticket.participants_enabled
 
     @item = {
       name:            'participants'
