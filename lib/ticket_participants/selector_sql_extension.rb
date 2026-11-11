@@ -1,6 +1,9 @@
 module TicketParticipants::SelectorSqlExtension
   CONDITION = 'ticket.participant_user_ids'.freeze
-  SUBQUERY  = 'SELECT ticket_participants.ticket_id FROM ticket_participants'.freeze
+  # Participants of tickets in groups without the feature are dormant and do not count.
+  SUBQUERY  = 'SELECT ticket_participants.ticket_id FROM ticket_participants ' \
+              'INNER JOIN tickets participant_tickets ON participant_tickets.id = ticket_participants.ticket_id ' \
+              'INNER JOIN groups participant_groups ON participant_groups.id = participant_tickets.group_id AND participant_groups.participants_enabled = TRUE'.freeze
 
   def condition_sql(block_condition)
     return super if block_condition.blank? || block_condition[:name] != CONDITION

@@ -8,6 +8,13 @@ update must be re-verified by running the specs against the new version before u
 
 ## Behavior
 
+- **Per group** – the feature is switched on per group (*Manage → Groups → edit → Participants*)
+  and is **off for every group by default**. In a group without it there is no participants
+  panel, nobody can be added (neither by agents nor by Cc), and no participant has access or
+  gets mail. If a ticket with participants moves or is merged into such a group, or the group
+  is switched off, its participants stay stored but dormant; they are restored when the ticket
+  moves on or the group is switched on again.
+
 - **Access** – a participant has exactly the ticket customer's access: sees the ticket and its
   public articles, may reply, may reopen as far as the group's follow-up setting allows. Internal
   articles and agent-only fields stay hidden.
@@ -51,10 +58,11 @@ update must be re-verified by running the specs against the new version before u
 - **API** – `GET|POST /api/v1/tickets/:ticket_id/participants`,
   `DELETE /api/v1/tickets/:ticket_id/participants/:id`. Email addresses of participants are
   only returned to agents of the ticket.
-- **Overviews** – customers get the overview *Tickets I participate in*. Overview conditions
-  offer *Participants* (current user, specific users, not set), so further overviews can be
-  built. *My Tickets* stays limited to tickets where the user is the customer: Zammad combines
-  overview conditions with AND, so "customer or participant" cannot be one overview.
+- **Overviews** – customers get the overview *Tickets I participate in*. Conditions offer
+  *Participants* (current user, specific users, not set) for further overviews. To have *My
+  Tickets* itself include participating tickets, enable expert conditions (*Settings → Ticket →
+  Allow expert conditions*), edit the overview in expert mode and combine "Customer is current
+  user" OR "Participants is current user".
 - **Search** – participants find their tickets via Elasticsearch (`participant_ids`).
 
 ## Patched internals
@@ -72,6 +80,7 @@ update must be re-verified by running the specs against the new version before u
 | `App.Ticket::editableByCustomer` (CoffeeScript) | lets participants reply in the classic UI |
 | `Selector::Sql#condition_sql` | adds the *Participants* condition |
 | `App.UiElement.ApplicationSelector.defaults` (CoffeeScript) | offers it in condition editors |
+| `groups.participants_enabled` (database column + object attribute) | per-group switch |
 
 ## Development
 
@@ -108,13 +117,13 @@ so the result is not linked into Zammad:
 ```bash
 python3 -c 'import json,base64,sys; p=json.load(open("TicketParticipants.szpm"))
 for f in p["files"]: f["content"]=base64.b64encode(open(f["location"],"rb").read()).decode()
-json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.4.0.zpm
+json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.5.0.zpm
 ```
 
 Install it via *Admin → System → Packages*, or:
 
 ```bash
-zammad run rails r 'Package.install(file: "/path/to/TicketParticipants-0.4.0.zpm")'
+zammad run rails r 'Package.install(file: "/path/to/TicketParticipants-0.5.0.zpm")'
 zammad run rails zammad:package:migrate
 zammad run rails zammad:package:post_install   # recompiles the classic UI's assets
 zammad run rake zammad:searchindex:rebuild

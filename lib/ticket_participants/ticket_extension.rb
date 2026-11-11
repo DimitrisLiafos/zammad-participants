@@ -5,11 +5,15 @@ module TicketParticipants::TicketExtension
     end
   end
 
+  def participants_enabled?
+    group&.participants_enabled == true
+  end
+
   # Read-only for the clients: the classic UI needs it to decide whether the
   #   current user may reply. Deliberately not an association, which could be
   #   assigned through ticket parameters.
   def attributes_with_association_ids
-    super.merge('participant_user_ids' => participants.pluck(:user_id))
+    super.merge('participant_user_ids' => participants_enabled? ? participants.pluck(:user_id) : [])
   end
 
   def search_index_attribute_lookup(include_references: true)

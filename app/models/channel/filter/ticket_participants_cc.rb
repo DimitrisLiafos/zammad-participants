@@ -2,6 +2,7 @@ module Channel::Filter::TicketParticipantsCc
   def self.run(_channel, mail, ticket, article, _session_user)
     return if !Setting.get('ticket_participants_cc_auto_add')
     return if !ticket || !article
+    return if !ticket.participants_enabled?
     return if Ticket::Article::Sender.lookup(id: article.sender_id)&.name != 'Customer'
 
     # Follow-ups are accepted from anybody who knows the ticket number, so only

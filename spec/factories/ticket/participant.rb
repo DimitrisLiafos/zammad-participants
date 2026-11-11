@@ -5,5 +5,8 @@ FactoryBot.define do
     source        { 'agent' }
     created_by_id { 1 }
     updated_by_id { 1 }
+
+    # The feature is off for new groups; most examples want a working participant.
+    after(:build) { |participant| participant.ticket.group.update!(participants_enabled: true) }
   end
 end

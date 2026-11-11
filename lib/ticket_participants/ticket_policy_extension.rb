@@ -8,6 +8,7 @@ module TicketParticipants::TicketPolicyExtension
   def participant_access?
     return false if !user.permissions?('ticket.customer')
     return false if !record.persisted?
+    return false if !record.participants_enabled?
     return false if !Ticket::Participant.exists?(ticket_id: record.id, user_id: user.id)
 
     customer_field_scope

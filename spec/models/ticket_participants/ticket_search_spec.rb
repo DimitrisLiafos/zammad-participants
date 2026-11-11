@@ -13,7 +13,9 @@ RSpec.describe 'Ticket search with participants' do # rubocop:disable RSpec/Desc
   it 'lets customers find tickets they participate in' do
     query = Ticket.search_query_extension(current_user: participant, scope: TicketPolicy::ReadScope)
 
-    expect(query.dig(:bool, :must, 0, :bool, :should)).to include({ 'term' => { 'participant_ids' => participant.id } })
+    expect(query.dig(:bool, :must, 0, :bool, :should)).to include(
+      { bool: { must: [{ 'term' => { 'participant_ids' => participant.id } }, { 'terms' => { 'group_id' => [ticket.group_id] } }] } }
+    )
   end
 
   it 'does not widen the query for agents' do
@@ -30,6 +32,12 @@ RSpec.describe 'Ticket search with participants' do # rubocop:disable RSpec/Desc
 
     it 'finds the ticket for the participant' do
       expect(Ticket.search(current_user: participant, query: ticket.number)).to include(ticket)
+    end
+
+    it 'does not find it once the group stops allowing participants' do
+      ticket.group.update!(participants_enabled: false)
+
+      expect(Ticket.search(current_user: participant, query: ticket.number)).to be_empty
     end
   end
 end

@@ -11,6 +11,7 @@ class Transaction::TicketParticipantNotification
     return if @item[:object] != 'Ticket'
     return if @params[:disable_notification]
     return if !ticket || !article
+    return if !ticket.participants_enabled?
     return if article.internal?
     return if Ticket::Article::Sender.lookup(id: article.sender_id)&.name == 'System'
 

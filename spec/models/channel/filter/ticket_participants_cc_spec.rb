@@ -15,6 +15,7 @@ RSpec.describe Channel::Filter::TicketParticipantsCc, type: :channel_filter do
   end
 
   before do
+    Group.find_each { |group| group.update!(participants_enabled: true) }
     Setting.set('ticket_participants_cc_auto_add', true)
     Setting.set('ticket_participants_cc_auto_add_domains', 'Allowed.example, @second.example')
   end
@@ -31,6 +32,12 @@ RSpec.describe Channel::Filter::TicketParticipantsCc, type: :channel_filter do
 
   it 'does not treat a subdomain as allowed' do
     Setting.set('ticket_participants_cc_auto_add_domains', 'example')
+
+    expect(participants).to be_empty
+  end
+
+  it 'adds nobody when the group does not allow participants' do
+    Group.find_each { |group| group.update!(participants_enabled: false) }
 
     expect(participants).to be_empty
   end
@@ -64,7 +71,7 @@ RSpec.describe Channel::Filter::TicketParticipantsCc, type: :channel_filter do
   end
 
   context 'when the email is a follow-up' do
-    let(:ticket) { create(:ticket) }
+    let(:ticket) { create(:ticket, group: create(:group, participants_enabled: true)) }
     let(:from)   { ticket.customer.email }
     let(:raw_mail) do
       super().sub('Subject: Printer broken', "Subject: RE: Printer broken [Ticket##{ticket.number}]")

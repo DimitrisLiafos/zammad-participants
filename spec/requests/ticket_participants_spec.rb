@@ -7,6 +7,8 @@ RSpec.describe 'Ticket participants', authenticated_as: :user, type: :request do
   let(:record)      { create(:ticket_participant, ticket:, user: participant) }
   let(:path)        { "/api/v1/tickets/#{ticket.id}/participants" }
 
+  before { ticket.group.update!(participants_enabled: true) }
+
   describe 'GET /api/v1/tickets/:ticket_id/participants' do
     before { record }
 
@@ -119,6 +121,34 @@ RSpec.describe 'Ticket participants', authenticated_as: :user, type: :request do
 
         expect(response).to have_http_status(:forbidden)
       end
+    end
+  end
+
+  context 'when the group of the ticket does not allow participants' do
+    let(:user) { agent }
+
+    before do
+      record
+      ticket.group.update!(participants_enabled: false)
+    end
+
+    it 'does not list participants' do
+      get path, as: :json
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it 'does not add participants', :aggregate_failures do
+      post path, params: { user_id: create(:customer).id }, as: :json
+
+      expect(response).to have_http_status(:forbidden)
+      expect(ticket.participants.count).to eq(1)
+    end
+
+    it 'keeps existing participants stored' do
+      delete "#{path}/#{record.id}", as: :json
+
+      expect(Ticket::Participant).to exist(record.id)
     end
   end
 
