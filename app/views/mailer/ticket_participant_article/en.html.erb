@@ -19,3 +19,7 @@ New reply on ticket (#{ticket.title})
 <div>
   <a href="#{config.http_type}://#{config.fqdn}/#ticket/zoom/#{ticket.id}/#{article.id}" target="zammad_app">View this in #{config.product_name}</a>
 </div>
+<br>
+<div>
+  You receive this email because you are a participant of this ticket. <a href="#{participant.unsubscribe_url}">Leave this ticket</a> to stop receiving its updates and to give up your access to it.
+</div>

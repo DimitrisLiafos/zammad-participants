@@ -1,6 +1,6 @@
 {
   "name": "TicketParticipants",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "vendor": "dliafos",
   "license": "proprietary",
   "url": "https://github.com/dliafos/zammad-participants",
@@ -13,6 +13,10 @@
   "files": [
     {
       "location": "app/assets/javascripts/app/lib/app_post/ticket_participants.coffee",
+      "permission": "644"
+    },
+    {
+      "location": "app/controllers/ticket_participant_unsubscribes_controller.rb",
       "permission": "644"
     },
     {

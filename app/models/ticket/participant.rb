@@ -20,6 +20,18 @@ class Ticket::Participant < ApplicationModel
   #   while the search index and connected clients still pick up the change.
   after_commit :touch_ticket
 
+  def self.find_by_unsubscribe_token(token)
+    find_by(id: unsubscribe_verifier.verified(token.to_s))
+  end
+
+  def self.unsubscribe_verifier
+    Rails.application.message_verifier(:ticket_participant_unsubscribe)
+  end
+
+  def unsubscribe_url
+    "#{Setting.get('http_type')}://#{Setting.get('fqdn')}#{Rails.configuration.api_path}/ticket_participants/unsubscribe/#{self.class.unsubscribe_verifier.generate(id)}"
+  end
+
   def history_log_attributes
     {
       related_o_id:           ticket_id,

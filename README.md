@@ -6,7 +6,7 @@ ticket customer and are notified about every public reply.
 Targets **Zammad 7.2.2**. The package prepends Zammad internals (see below), so every Zammad
 update must be re-verified by running the specs against the new version before upgrading.
 
-## Behavior (phase 1)
+## Behavior
 
 - **Access** – a participant has exactly the ticket customer's access: sees the ticket and its
   public articles, may reply, may reopen as far as the group's follow-up setting allows. Internal
@@ -29,9 +29,18 @@ update must be re-verified by running the specs against the new version before u
   public history**, without anyone adding them there explicitly. This is intended; the agent who
   merges is responsible for it. Remove participants before merging if they must not see the
   target ticket.
+- **Triggers** – triggers and schedulers offer *Participants* as an email recipient. Use them
+  for state changes and other non-article events; the package itself only notifies replies.
+- **Cc auto-add** – optional (*Channels → Email → Settings*, off by default): Cc recipients of
+  incoming customer emails become participants if their email domain is in the allowed list.
+  Without a listed domain nobody is added; subdomains must be listed separately.
+- **Leaving** – every participant email carries a signed link (and `List-Unsubscribe` headers).
+  It opens a confirmation page that needs no login; confirming removes the participant and
+  their access.
+- **API** – `GET|POST /api/v1/tickets/:ticket_id/participants`,
+  `DELETE /api/v1/tickets/:ticket_id/participants/:id`. Email addresses of participants are
+  only returned to agents of the ticket.
 - **Search** – participants find their tickets via Elasticsearch (`participant_ids`).
-
-State changes and other non-article events are not notified by the package; use triggers.
 
 ## Patched internals
 
@@ -43,6 +52,8 @@ State changes and other non-article events are not notified by the package; use 
 | `Ticket#search_index_attribute_lookup` | indexes `participant_ids` |
 | `Ticket#merge_to` | moves participants on merge |
 | `User` `before_destroy` | removes participations before core's reference check |
+| `Ticket::PerformChanges::Action::NotificationEmail#recipients_by_type` (private) | adds the *Participants* trigger recipient |
+| `App.UiElement.ApplicationAction.recpientVariables` (CoffeeScript) | offers it in the trigger editor |
 
 ## Development
 
@@ -62,9 +73,12 @@ Run the specs:
 RAILS_ENV=test VITE_TEST_MODE=1 bundle exec rspec \
   spec/models/ticket/participant_spec.rb \
   spec/models/ticket_participants \
+  spec/models/channel/filter/ticket_participants_cc_spec.rb \
   spec/models/transaction/ticket_participant_notification_spec.rb \
   spec/policies/ticket/participant_policy_spec.rb \
-  spec/policies/ticket_policy/participant_access_spec.rb
+  spec/policies/ticket_policy/participant_access_spec.rb \
+  spec/requests/ticket_participants_spec.rb \
+  spec/requests/ticket_participant_unsubscribes_spec.rb
 ```
 
 Elasticsearch examples are tagged `searchindex: true` and need `ES_URL`.
@@ -77,13 +91,13 @@ so the result is not linked into Zammad:
 ```bash
 python3 -c 'import json,base64,sys; p=json.load(open("TicketParticipants.szpm"))
 for f in p["files"]: f["content"]=base64.b64encode(open(f["location"],"rb").read()).decode()
-json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.1.0.zpm
+json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.2.0.zpm
 ```
 
 Install it via *Admin → System → Packages*, or:
 
 ```bash
-zammad run rails r 'Package.install(file: "/path/to/TicketParticipants-0.1.0.zpm")'
+zammad run rails r 'Package.install(file: "/path/to/TicketParticipants-0.2.0.zpm")'
 zammad run rails zammad:package:migrate
 zammad run rails zammad:package:post_install
 zammad run rake zammad:searchindex:rebuild
