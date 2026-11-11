@@ -41,6 +41,10 @@ update must be re-verified by running the specs against the new version before u
 - **Leaving** – a participant removes themselves in the ticket (API today, UI planned) or asks
   an agent. Emails deliberately carry no leave link: a link that works without login would end
   up in the ticket whenever a reply quotes the email, where others could use it.
+  **This assumes participants can log in.** Zammad creates the users for Cc recipients without
+  a password. Where the allowed domains are covered by a login source such as LDAP or SSO they
+  can sign in right away; otherwise they have to use *Forgot password* first, or ask an agent
+  to remove them. Limit the allowed domains accordingly.
 - **API** – `GET|POST /api/v1/tickets/:ticket_id/participants`,
   `DELETE /api/v1/tickets/:ticket_id/participants/:id`. Email addresses of participants are
   only returned to agents of the ticket.
