@@ -40,7 +40,8 @@ update must be re-verified by running the specs against the new version before u
   allowed domain; keep the domain list to domains you trust.
 - **Leaving** – every participant email carries a signed link (and `List-Unsubscribe` headers).
   It opens a confirmation page that needs no login; confirming removes the participant and
-  their access.
+  their access. A link is valid for 30 days; a reply that quotes the email puts the link into
+  the ticket, where others with access could use it until then.
 - **API** – `GET|POST /api/v1/tickets/:ticket_id/participants`,
   `DELETE /api/v1/tickets/:ticket_id/participants/:id`. Email addresses of participants are
   only returned to agents of the ticket.

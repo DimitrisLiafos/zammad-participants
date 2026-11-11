@@ -49,10 +49,12 @@ RSpec.describe Transaction::TicketParticipantNotification, type: :model do
   it 'offers the participant to leave the ticket', :aggregate_failures do
     perform
 
-    url = Ticket::Participant.find_by(user: participant).unsubscribe_url
+    url   = deliveries.first['List-Unsubscribe'][1..-2]
+    token = url.split('/').last
 
+    expect(Ticket::Participant.find_by_unsubscribe_token(token).user).to eq(participant)
     expect(deliveries.first[:body]).to include(url)
-    expect(deliveries.first).to include('List-Unsubscribe' => "<#{url}>", 'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click')
+    expect(deliveries.first['List-Unsubscribe-Post']).to eq('List-Unsubscribe=One-Click')
   end
 
   it 'logs the notification in the ticket history' do

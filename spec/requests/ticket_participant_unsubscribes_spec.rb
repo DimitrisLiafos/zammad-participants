@@ -14,7 +14,7 @@ RSpec.describe 'Ticket participant unsubscribe', type: :request do
     end
 
     it 'rejects a forged token' do
-      get path.sub(%r{[^/]+\z}, Ticket::Participant.unsubscribe_verifier.generate(participant.id).reverse)
+      get path.sub(%r{[^/]+\z}, participant.unsubscribe_token.reverse)
 
       expect(response).to have_http_status(:not_found)
     end
@@ -48,6 +48,17 @@ RSpec.describe 'Ticket participant unsubscribe', type: :request do
       post path
 
       expect(response).to have_http_status(:not_found)
+    end
+
+    it 'rejects an expired link', :aggregate_failures do
+      path
+
+      travel_to 31.days.from_now
+
+      post path
+
+      expect(response).to have_http_status(:not_found)
+      expect(Ticket::Participant).to exist(participant.id)
     end
 
     it 'rejects a forged token', :aggregate_failures do
