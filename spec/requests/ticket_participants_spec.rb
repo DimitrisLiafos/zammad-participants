@@ -122,6 +122,32 @@ RSpec.describe 'Ticket participants', authenticated_as: :user, type: :request do
     end
   end
 
+  describe 'PUT /api/v1/tickets/:id' do
+    let(:intruder) { create(:customer) }
+
+    %w[participant_user_ids participant_ids participant_users participants].each do |attribute|
+      context "when the ticket customer passes #{attribute}" do
+        let(:user) { ticket.customer }
+
+        it 'does not add participants' do
+          put "/api/v1/tickets/#{ticket.id}", params: { attribute => [intruder.id], title: 'changed' }, as: :json
+
+          expect(ticket.reload.participants).to be_empty
+        end
+      end
+    end
+
+    context 'when an agent passes participant_user_ids' do
+      let(:user) { agent }
+
+      it 'does not add participants' do
+        put "/api/v1/tickets/#{ticket.id}", params: { participant_user_ids: [intruder.id] }, as: :json
+
+        expect(ticket.reload.participants).to be_empty
+      end
+    end
+  end
+
   describe 'DELETE /api/v1/tickets/:ticket_id/participants/:id' do
     before { record }
 
