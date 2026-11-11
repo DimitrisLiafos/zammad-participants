@@ -33,7 +33,11 @@ update must be re-verified by running the specs against the new version before u
   for state changes and other non-article events; the package itself only notifies replies.
 - **Cc auto-add** – optional (*Channels → Email → Settings*, off by default): Cc recipients of
   incoming customer emails become participants if their email domain is in the allowed list.
-  Without a listed domain nobody is added; subdomains must be listed separately.
+  Without a listed domain nobody is added; subdomains must be listed separately. On follow-ups
+  only a sender who already has access to the ticket (its customer, a participant, a member of
+  its shared organization) can bring in others. Zammad does not verify the `From` address of
+  an email, so somebody who forges the address of such a sender can add Cc recipients of an
+  allowed domain; keep the domain list to domains you trust.
 - **Leaving** – every participant email carries a signed link (and `List-Unsubscribe` headers).
   It opens a confirmation page that needs no login; confirming removes the participant and
   their access.

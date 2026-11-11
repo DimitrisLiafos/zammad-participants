@@ -74,6 +74,22 @@ RSpec.describe Channel::Filter::TicketParticipantsCc, type: :channel_filter do
       expect(participants).to eq([['colleague@allowed.example', 'cc_auto']])
     end
 
+    context 'when somebody without access to the ticket sends it' do
+      let(:from) { 'stranger@allowed.example' }
+
+      it 'adds nobody' do
+        expect(participants).to be_empty
+      end
+    end
+
+    context 'when a participant sends it' do
+      let(:from) { create(:ticket_participant, ticket:).user.email }
+
+      it 'adds the Cc recipient' do
+        expect(participants).to include(['colleague@allowed.example', 'cc_auto'])
+      end
+    end
+
     context 'when an agent of the group sends it' do
       let(:from) { create(:agent, groups: [ticket.group]).email }
 

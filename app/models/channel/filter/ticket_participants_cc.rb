@@ -4,6 +4,11 @@ module Channel::Filter::TicketParticipantsCc
     return if !ticket || !article
     return if Ticket::Article::Sender.lookup(id: article.sender_id)&.name != 'Customer'
 
+    # Follow-ups are accepted from anybody who knows the ticket number, so only
+    #   somebody who may see the ticket already can bring others into it.
+    sender = User.lookup(id: article.origin_by_id || article.created_by_id)
+    return if !sender || !TicketPolicy.new(sender, ticket).show?
+
     domains = allowed_domains
     return if domains.blank?
 
