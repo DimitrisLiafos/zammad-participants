@@ -51,6 +51,10 @@ update must be re-verified by running the specs against the new version before u
 - **API** – `GET|POST /api/v1/tickets/:ticket_id/participants`,
   `DELETE /api/v1/tickets/:ticket_id/participants/:id`. Email addresses of participants are
   only returned to agents of the ticket.
+- **Overviews** – customers get the overview *Tickets I participate in*. Overview conditions
+  offer *Participants* (current user, specific users, not set), so further overviews can be
+  built. *My Tickets* stays limited to tickets where the user is the customer: Zammad combines
+  overview conditions with AND, so "customer or participant" cannot be one overview.
 - **Search** – participants find their tickets via Elasticsearch (`participant_ids`).
 
 ## Patched internals
@@ -66,6 +70,8 @@ update must be re-verified by running the specs against the new version before u
 | `Ticket::PerformChanges::Action::NotificationEmail#recipients_by_type` (private) | adds the *Participants* trigger recipient |
 | `App.UiElement.ApplicationAction.recpientVariables` (CoffeeScript) | offers it in the trigger editor |
 | `App.Ticket::editableByCustomer` (CoffeeScript) | lets participants reply in the classic UI |
+| `Selector::Sql#condition_sql` | adds the *Participants* condition |
+| `App.UiElement.ApplicationSelector.defaults` (CoffeeScript) | offers it in condition editors |
 
 ## Development
 
@@ -102,15 +108,15 @@ so the result is not linked into Zammad:
 ```bash
 python3 -c 'import json,base64,sys; p=json.load(open("TicketParticipants.szpm"))
 for f in p["files"]: f["content"]=base64.b64encode(open(f["location"],"rb").read()).decode()
-json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.3.0.zpm
+json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.4.0.zpm
 ```
 
 Install it via *Admin → System → Packages*, or:
 
 ```bash
-zammad run rails r 'Package.install(file: "/path/to/TicketParticipants-0.3.0.zpm")'
+zammad run rails r 'Package.install(file: "/path/to/TicketParticipants-0.4.0.zpm")'
 zammad run rails zammad:package:migrate
-zammad run rails zammad:package:post_install
+zammad run rails zammad:package:post_install   # recompiles the classic UI's assets
 zammad run rake zammad:searchindex:rebuild
 ```
 
