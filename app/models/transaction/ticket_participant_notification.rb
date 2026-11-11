@@ -86,8 +86,6 @@ class Transaction::TicketParticipantNotification
     channel = Channel.find_by(area: 'Email::Notification', active: true)
     return false if !channel
 
-    participant = ticket.participants.find_by!(user:)
-
     rendered = NotificationFactory::Mailer.template(
       template: 'ticket_participant_article',
       locale:   user.locale,
@@ -97,7 +95,6 @@ class Transaction::TicketParticipantNotification
         article:      article,
         recipient:    user,
         current_user: User.lookup(id: @item[:user_id]) || User.lookup(id: 1),
-        participant:  participant,
       },
     )
 
@@ -112,8 +109,6 @@ class Transaction::TicketParticipantNotification
         body:         HtmlSanitizer.dynamic_image_size(HtmlSanitizer.adjust_inline_image_size(rendered[:body])),
         content_type: 'text/html',
         attachments:  article.attachments_inline,
-        'List-Unsubscribe'      => "<#{participant.unsubscribe_url}>",
-        'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
       }.compact,
       true,
     )

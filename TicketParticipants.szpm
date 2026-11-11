@@ -16,10 +16,6 @@
       "permission": "644"
     },
     {
-      "location": "app/controllers/ticket_participant_unsubscribes_controller.rb",
-      "permission": "644"
-    },
-    {
       "location": "app/controllers/ticket_participants_controller.rb",
       "permission": "644"
     },

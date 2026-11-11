@@ -20,29 +20,6 @@ class Ticket::Participant < ApplicationModel
   #   while the search index and connected clients still pick up the change.
   after_commit :touch_ticket
 
-  # A reply that quotes the notification puts the link into the ticket, where
-  #   others can read it, so it must not stay usable forever.
-  UNSUBSCRIBE_TOKEN_VALIDITY = 30.days
-
-  def self.find_by_unsubscribe_token(token)
-    id, user_id = unsubscribe_verifier.verified(token.to_s, purpose: :unsubscribe)
-    return if !id
-
-    find_by(id:, user_id:)
-  end
-
-  def self.unsubscribe_verifier
-    Rails.application.message_verifier(:ticket_participant_unsubscribe)
-  end
-
-  def unsubscribe_url
-    "#{Setting.get('http_type')}://#{Setting.get('fqdn')}#{Rails.configuration.api_path}/ticket_participants/unsubscribe/#{unsubscribe_token}"
-  end
-
-  def unsubscribe_token
-    @unsubscribe_token ||= self.class.unsubscribe_verifier.generate([id, user_id], purpose: :unsubscribe, expires_in: UNSUBSCRIBE_TOKEN_VALIDITY)
-  end
-
   def history_log_attributes
     {
       related_o_id:           ticket_id,

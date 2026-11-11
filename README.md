@@ -38,10 +38,9 @@ update must be re-verified by running the specs against the new version before u
   its shared organization) can bring in others. Zammad does not verify the `From` address of
   an email, so somebody who forges the address of such a sender can add Cc recipients of an
   allowed domain; keep the domain list to domains you trust.
-- **Leaving** – every participant email carries a signed link (and `List-Unsubscribe` headers).
-  It opens a confirmation page that needs no login; confirming removes the participant and
-  their access. A link is valid for 30 days; a reply that quotes the email puts the link into
-  the ticket, where others with access could use it until then.
+- **Leaving** – a participant removes themselves in the ticket (API today, UI planned) or asks
+  an agent. Emails deliberately carry no leave link: a link that works without login would end
+  up in the ticket whenever a reply quotes the email, where others could use it.
 - **API** – `GET|POST /api/v1/tickets/:ticket_id/participants`,
   `DELETE /api/v1/tickets/:ticket_id/participants/:id`. Email addresses of participants are
   only returned to agents of the ticket.
@@ -82,8 +81,7 @@ RAILS_ENV=test VITE_TEST_MODE=1 bundle exec rspec \
   spec/models/transaction/ticket_participant_notification_spec.rb \
   spec/policies/ticket/participant_policy_spec.rb \
   spec/policies/ticket_policy/participant_access_spec.rb \
-  spec/requests/ticket_participants_spec.rb \
-  spec/requests/ticket_participant_unsubscribes_spec.rb
+  spec/requests/ticket_participants_spec.rb
 ```
 
 Elasticsearch examples are tagged `searchindex: true` and need `ES_URL`.
