@@ -11,15 +11,57 @@
     }
   ],
   "files": [
-    { "location": "app/models/ticket/participant.rb", "permission": "644" },
-    { "location": "app/models/transaction/ticket_participant_notification.rb", "permission": "644" },
-    { "location": "app/policies/ticket/participant_policy.rb", "permission": "644" },
-    { "location": "app/views/mailer/ticket_participant_article/en.html.erb", "permission": "644" },
-    { "location": "config/initializers/ticket_participants.rb", "permission": "644" },
-    { "location": "db/addon/ticket_participants/20261110120000_ticket_participants_setup.rb", "permission": "644" },
-    { "location": "lib/ticket_participants/ticket_extension.rb", "permission": "644" },
-    { "location": "lib/ticket_participants/ticket_policy_extension.rb", "permission": "644" },
-    { "location": "lib/ticket_participants/ticket_policy_scope_extension.rb", "permission": "644" },
-    { "location": "lib/ticket_participants/ticket_search_extension.rb", "permission": "644" }
+    {
+      "location": "app/controllers/ticket_participants_controller.rb",
+      "permission": "644"
+    },
+    {
+      "location": "app/models/ticket/participant.rb",
+      "permission": "644"
+    },
+    {
+      "location": "app/models/transaction/ticket_participant_notification.rb",
+      "permission": "644"
+    },
+    {
+      "location": "app/policies/controllers/ticket_participants_controller_policy.rb",
+      "permission": "644"
+    },
+    {
+      "location": "app/policies/ticket/participant_policy.rb",
+      "permission": "644"
+    },
+    {
+      "location": "app/views/mailer/ticket_participant_article/en.html.erb",
+      "permission": "644"
+    },
+    {
+      "location": "config/initializers/ticket_participants.rb",
+      "permission": "644"
+    },
+    {
+      "location": "config/routes/ticket_participant.rb",
+      "permission": "644"
+    },
+    {
+      "location": "db/addon/ticket_participants/20261110120000_ticket_participants_setup.rb",
+      "permission": "644"
+    },
+    {
+      "location": "lib/ticket_participants/ticket_extension.rb",
+      "permission": "644"
+    },
+    {
+      "location": "lib/ticket_participants/ticket_policy_extension.rb",
+      "permission": "644"
+    },
+    {
+      "location": "lib/ticket_participants/ticket_policy_scope_extension.rb",
+      "permission": "644"
+    },
+    {
+      "location": "lib/ticket_participants/ticket_search_extension.rb",
+      "permission": "644"
+    }
   ]
 }
