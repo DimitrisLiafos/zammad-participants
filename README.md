@@ -24,8 +24,11 @@ update must be re-verified by running the specs against the new version before u
 
   Each address is mailed once. Mails go through the notification channel with `Reply-To` set to
   the group's email address, and the ticket hook in the subject, so replies become follow-ups.
-- **Merge** – participants move to the target ticket (duplicates and the target's customer are
-  dropped).
+- **Merge** – participants of the merged ticket move to the target ticket (duplicates and the
+  target's customer are dropped). **They thereby gain access to the target ticket's complete
+  public history**, without anyone adding them there explicitly. This is intended; the agent who
+  merges is responsible for it. Remove participants before merging if they must not see the
+  target ticket.
 - **Search** – participants find their tickets via Elasticsearch (`participant_ids`).
 
 State changes and other non-article events are not notified by the package; use triggers.

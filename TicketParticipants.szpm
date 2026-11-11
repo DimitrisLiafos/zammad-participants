@@ -20,6 +20,10 @@
       "permission": "644"
     },
     {
+      "location": "app/models/channel/filter/ticket_participants_cc.rb",
+      "permission": "644"
+    },
+    {
       "location": "app/models/ticket/participant.rb",
       "permission": "644"
     },
@@ -49,6 +53,10 @@
     },
     {
       "location": "db/addon/ticket_participants/20261110120000_ticket_participants_setup.rb",
+      "permission": "644"
+    },
+    {
+      "location": "db/addon/ticket_participants/20261111120000_ticket_participants_cc_auto_add.rb",
       "permission": "644"
     },
     {
