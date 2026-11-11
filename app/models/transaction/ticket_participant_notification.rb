@@ -19,7 +19,9 @@ class Transaction::TicketParticipantNotification
   end
 
   def recipients
-    candidates = ticket.participants.includes(:user).map(&:user)
+    # Notifications are sent by a background job; whoever joined in the
+    #   meantime was not a participant when the article was written.
+    candidates = ticket.participants.where(created_at: ..article.created_at).includes(:user).map(&:user)
     candidates = candidates.select { |user| deliverable?(user) }
     candidates.uniq { |user| user.email.downcase }
   end
@@ -88,10 +90,12 @@ class Transaction::TicketParticipantNotification
     return false if !channel
 
     rendered = NotificationFactory::Mailer.template(
-      template: 'ticket_participant_article',
-      locale:   user.locale,
-      timezone: Setting.get('timezone_default'),
-      objects:  {
+      template:   'ticket_participant_article',
+      # Without the footer for agents, which links to their notification settings.
+      standalone: true,
+      locale:     user.locale,
+      timezone:   Setting.get('timezone_default'),
+      objects:    {
         ticket:       ticket,
         article:      article,
         recipient:    user,

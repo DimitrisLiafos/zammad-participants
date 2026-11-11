@@ -38,6 +38,12 @@ RSpec.describe Transaction::TicketParticipantNotification, type: :model do
     expect(deliveries.first).to include(subject: include(ticket.title), body: include(article.body), content_type: 'text/html')
   end
 
+  it 'leaves out the footer for agents' do
+    perform
+
+    expect(deliveries.first[:body]).not_to include('profile/notifications')
+  end
+
   it 'lets replies go to the group email address' do
     ticket.group.update!(email_address: create(:email_address, email: 'support@example.com'))
 
@@ -176,6 +182,20 @@ RSpec.describe Transaction::TicketParticipantNotification, type: :model do
       perform
 
       expect(recipients.map(&:downcase)).to eq(['participant@example.com'])
+    end
+  end
+
+  context 'when the participant joined after the article was written' do
+    before do
+      article
+      travel 1.minute
+      create(:ticket_participant, ticket:, user: create(:customer, email: 'late@example.com'))
+    end
+
+    it 'notifies only those who participated at that time' do
+      perform
+
+      expect(recipients).to eq(['participant@example.com'])
     end
   end
 
