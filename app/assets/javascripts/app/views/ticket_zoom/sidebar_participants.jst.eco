@@ -1,0 +1,23 @@
+<div>
+<% if _.isEmpty(@participants): %>
+  <div class="sidebar-block"><%- @T('none') %></div>
+<% end %>
+<% for participant in @participants: %>
+  <div class="sidebar-block">
+    <label class="horizontal">
+      <span><%= participant.fullname %></span>
+      <% if participant.removable: %>
+        <div class="list-item-delete js-remove" data-id="<%= participant.id %>" data-self="<%= participant.user_id is @currentUserId %>" title="<%- if participant.user_id is @currentUserId then @Ti('Leave ticket') else @Ti('Remove participant') %>">
+          <%- @Icon('diagonal-cross') %>
+        </div>
+      <% end %>
+    </label>
+    <% if participant.email: %>
+      <div class="text-muted"><%= participant.email %></div>
+    <% end %>
+    <% if participant.source is 'cc_auto': %>
+      <div class="text-muted"><%- @T('Added automatically (Cc)') %></div>
+    <% end %>
+  </div>
+<% end %>
+</div>

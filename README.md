@@ -38,8 +38,11 @@ update must be re-verified by running the specs against the new version before u
   its shared organization) can bring in others. Zammad does not verify the `From` address of
   an email, so somebody who forges the address of such a sender can add Cc recipients of an
   allowed domain; keep the domain list to domains you trust.
-- **Leaving** – a participant removes themselves in the ticket (API today, UI planned) or asks
-  an agent. Emails deliberately carry no leave link: a link that works without login would end
+- **UI** – the classic ticket sidebar has a *Participants* panel: everybody who sees the ticket
+  sees the list, agents with `change` access add and remove participants, and a participant
+  can leave the ticket there. The new desktop and mobile views have no panel yet.
+- **Leaving** – a participant removes themselves in the ticket's *Participants* panel or asks an
+  agent. Emails deliberately carry no leave link: a link that works without login would end
   up in the ticket whenever a reply quotes the email, where others could use it.
   **This assumes participants can log in.** Zammad creates the users for Cc recipients without
   a password. Where the allowed domains are covered by a login source such as LDAP or SSO they
@@ -62,6 +65,7 @@ update must be re-verified by running the specs against the new version before u
 | `User` `before_destroy` | removes participations before core's reference check |
 | `Ticket::PerformChanges::Action::NotificationEmail#recipients_by_type` (private) | adds the *Participants* trigger recipient |
 | `App.UiElement.ApplicationAction.recpientVariables` (CoffeeScript) | offers it in the trigger editor |
+| `App.Ticket::editableByCustomer` (CoffeeScript) | lets participants reply in the classic UI |
 
 ## Development
 
@@ -98,13 +102,13 @@ so the result is not linked into Zammad:
 ```bash
 python3 -c 'import json,base64,sys; p=json.load(open("TicketParticipants.szpm"))
 for f in p["files"]: f["content"]=base64.b64encode(open(f["location"],"rb").read()).decode()
-json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.2.0.zpm
+json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.3.0.zpm
 ```
 
 Install it via *Admin → System → Packages*, or:
 
 ```bash
-zammad run rails r 'Package.install(file: "/path/to/TicketParticipants-0.2.0.zpm")'
+zammad run rails r 'Package.install(file: "/path/to/TicketParticipants-0.3.0.zpm")'
 zammad run rails zammad:package:migrate
 zammad run rails zammad:package:post_install
 zammad run rake zammad:searchindex:rebuild

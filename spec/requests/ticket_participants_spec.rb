@@ -16,7 +16,7 @@ RSpec.describe 'Ticket participants', authenticated_as: :user, type: :request do
       it 'lists participants with their email' do
         get path, as: :json
 
-        expect(json_response).to contain_exactly(include('id' => record.id, 'user_id' => participant.id, 'fullname' => participant.fullname, 'email' => participant.email, 'source' => 'agent'))
+        expect(json_response).to include('can_add' => true, 'participants' => contain_exactly(include('id' => record.id, 'user_id' => participant.id, 'fullname' => participant.fullname, 'email' => participant.email, 'source' => 'agent', 'removable' => true)))
       end
     end
 
@@ -26,8 +26,9 @@ RSpec.describe 'Ticket participants', authenticated_as: :user, type: :request do
       it 'lists participants without their email', :aggregate_failures do
         get path, as: :json
 
-        expect(json_response.first).to include('fullname' => participant.fullname)
-        expect(json_response.first).not_to have_key('email')
+        expect(json_response).to include('can_add' => false)
+        expect(json_response['participants'].first).to include('fullname' => participant.fullname, 'removable' => false)
+        expect(json_response['participants'].first).not_to have_key('email')
       end
     end
 
@@ -39,7 +40,7 @@ RSpec.describe 'Ticket participants', authenticated_as: :user, type: :request do
       it 'lists participants without their email' do
         get path, as: :json
 
-        expect(json_response.first).not_to have_key('email')
+        expect(json_response['participants'].first).not_to have_key('email')
       end
     end
 
@@ -49,7 +50,7 @@ RSpec.describe 'Ticket participants', authenticated_as: :user, type: :request do
       it 'lists participants' do
         get path, as: :json
 
-        expect(json_response.pluck('user_id')).to eq([participant.id])
+        expect(json_response).to include('can_add' => false, 'participants' => [include('user_id' => participant.id, 'removable' => true)])
       end
     end
 

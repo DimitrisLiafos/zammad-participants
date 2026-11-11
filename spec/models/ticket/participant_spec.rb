@@ -31,6 +31,14 @@ RSpec.describe Ticket::Participant, type: :model do
     end
   end
 
+  describe 'ticket attributes for the clients' do
+    it 'lists the participating users' do
+      participant = create(:ticket_participant, ticket:)
+
+      expect(ticket.reload.attributes_with_association_ids).to include('participant_user_ids' => [participant.user_id])
+    end
+  end
+
   describe 'side effects' do
     it 'does not dispatch a ticket transaction' do
       ticket

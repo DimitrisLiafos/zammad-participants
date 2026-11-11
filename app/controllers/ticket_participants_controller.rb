@@ -3,7 +3,10 @@ class TicketParticipantsController < ApplicationController
 
   # GET /api/v1/tickets/:ticket_id/participants
   def index
-    render json: ticket.participants.includes(:user).reorder(:id).map { |participant| participant_json(participant) }
+    render json: {
+      participants: ticket.participants.includes(:user).reorder(:id).map { |participant| participant_json(participant) },
+      can_add:      Ticket::ParticipantPolicy.new(current_user, ticket.participants.build).create?,
+    }
   end
 
   # POST /api/v1/tickets/:ticket_id/participants
@@ -40,6 +43,7 @@ class TicketParticipantsController < ApplicationController
       source:     participant.source,
       fullname:   participant.user.fullname,
       created_at: participant.created_at,
+      removable:  Ticket::ParticipantPolicy.new(current_user, participant).destroy?,
     }
     data[:email] = participant.user.email if agent_of_ticket?
     data

@@ -1,6 +1,6 @@
 {
   "name": "TicketParticipants",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "vendor": "dliafos",
   "license": "proprietary",
   "url": "https://github.com/dliafos/zammad-participants",
@@ -12,7 +12,15 @@
   ],
   "files": [
     {
+      "location": "app/assets/javascripts/app/controllers/ticket_zoom/sidebar_participants.coffee",
+      "permission": "644"
+    },
+    {
       "location": "app/assets/javascripts/app/lib/app_post/ticket_participants.coffee",
+      "permission": "644"
+    },
+    {
+      "location": "app/assets/javascripts/app/views/ticket_zoom/sidebar_participants.jst.eco",
       "permission": "644"
     },
     {
