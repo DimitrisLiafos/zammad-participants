@@ -1,0 +1,21 @@
+New reply on ticket (#{ticket.title})
+
+<div>Hi #{recipient.firstname},</div>
+<br>
+<div>
+"<b>#{current_user.longname}</b>" replied to ticket (#{ticket.title}), in which you are a participant.
+</div>
+<br>
+<div>
+  <blockquote type="cite">
+  #{article.body_as_html}
+  </blockquote>
+</div>
+<br>
+<div>
+  You can reply to this email to answer on the ticket.
+</div>
+<br>
+<div>
+  <a href="#{config.http_type}://#{config.fqdn}/#ticket/zoom/#{ticket.id}/#{article.id}" target="zammad_app">View this in #{config.product_name}</a>
+</div>
