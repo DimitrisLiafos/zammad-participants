@@ -9,10 +9,37 @@ Run everything as `root` (or with `sudo`) on the Zammad server.
 
 - **Version:** `zammad run rails r 'puts Version.get'` must print `7.2.2…`. The package patches
   Zammad internals and is only tested against 7.2.2.
-- **Maintenance window:** plan 15–30 minutes. Step 3 rebuilds the web interface's assets (several
-  minutes, CPU and memory heavy) and step 4 restarts Zammad; users are interrupted.
+- **Rehearsal:** rehearse the install on a clone of the server first, see `README.staging.md`.
+- **Maintenance window:** plan 15–30 minutes. Step 3 rebuilds the web interface's assets (about
+  6 minutes in testing, CPU and memory heavy) and step 4 restarts Zammad. The rebuild removes
+  the current assets first, so the web interface is broken until step 4: announce a downtime
+  for the whole window.
+- **Network:** step 3 runs `pnpm install` and needs HTTPS access to `registry.npmjs.org`.
 - **Backup:** take a database backup and a copy of `/opt/zammad` first, e.g. with Zammad's
   backup script (`/opt/zammad/contrib/backup/zammad_backup.sh`), and check that it finished.
+  On a VM, also take a snapshot right before step 1 as a fast way back. Reverting it loses
+  every mail Zammad fetched after it was taken, so decide quickly. Delete the snapshot once
+  everything runs fine.
+- **No ticket field named `participants`:** the package adds the association
+  `Ticket#participants`. An existing ticket object attribute with that name (or
+  `participant_ids`) clashes with it and breaks every new ticket form
+  (`undefined method 'each' for an instance of String` in Core Workflow). Check:
+
+  ```bash
+  zammad run rails r 'p Ticket.column_names & %w[participants participant_ids]'
+  # => []
+  ```
+
+  If it lists a field, export its values, then delete it in *Manage → Objects → Ticket →*
+  the field *→ Delete → Update database*, and restart Zammad (`systemctl restart zammad`):
+
+  ```bash
+  sudo -u postgres psql zammad -c "\copy (SELECT id, number, participants FROM tickets WHERE participants IS NOT NULL AND participants::text NOT IN ('', '[]', '{}') ORDER BY id) TO '/tmp/old_participants_field.csv' CSV HEADER"
+  ```
+
+  Keep the CSV somewhere safe. Do not turn its values into participants blindly: that grants
+  access to the tickets. Zammad refuses the deletion while an overview, trigger or core
+  workflow still uses the field; remove it there first.
 - **Package file:** copy `TicketParticipants-0.5.2.zpm` to the server, e.g. to `/tmp/`. Build it
   as described in `README.md` ("Build & install"). Compare the checksum on the server with the
   one from the build machine: `sha256sum /tmp/TicketParticipants-0.5.2.zpm`.
@@ -21,10 +48,10 @@ Run everything as `root` (or with `sudo`) on the Zammad server.
 
 ```bash
 # 1. Install the package files
-zammad run rails zammad:package:install /tmp/TicketParticipants-0.5.2.zpm
+zammad run rake zammad:package:install /tmp/TicketParticipants-0.5.2.zpm
 
 # 2. + 3. Run the package's database migrations and rebuild the assets
-zammad run rails zammad:package:post_install
+zammad run rake zammad:package:post_install
 
 # 4. Restart Zammad so the new code is loaded
 systemctl restart zammad
@@ -56,7 +83,9 @@ Nothing changes for users yet: the feature is off for every group.
 1. **Group:** *Manage → Groups →* edit the group *→ Participants: yes*. Only do this for groups
    whose tickets may be shared with additional customers.
 2. **Check with one ticket** of that group: the sidebar shows the *Participants* tab; add a
-   customer; log in as that customer and confirm they see the ticket and can reply.
+   customer; log in as that customer and confirm they see the ticket and can reply. Use a
+   customer who is not in the ticket's organization: in a *shared* organization every member
+   sees the organization's tickets anyway, with or without being a participant.
 3. **Optional – "My Tickets" shows participating tickets too:** *Settings → Ticket → Allow
    expert conditions: yes*, then *Manage → Overviews → My Tickets*, switch the conditions to
    expert mode and combine *Customer is current user* **OR** *Participants is current user*.
@@ -75,8 +104,8 @@ stored but have no access and get no mail.
 To remove the package completely:
 
 ```bash
-zammad run rails zammad:package:uninstall TicketParticipants
-zammad run rails zammad:package:post_install
+zammad run rake zammad:package:uninstall TicketParticipants
+zammad run rake zammad:package:post_install
 systemctl restart zammad
 ```
 
@@ -96,8 +125,8 @@ The package is tied to Zammad 7.2.2. Before any Zammad update:
 2. Update Zammad only when they pass, then run:
 
 ```bash
-zammad run rails zammad:package:reinstall_all
-zammad run rails zammad:package:post_install
+zammad run rake zammad:package:reinstall_all
+zammad run rake zammad:package:post_install
 systemctl restart zammad
 ```
 

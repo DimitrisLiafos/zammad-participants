@@ -6,6 +6,9 @@ ticket customer and are notified about every public reply.
 Targets **Zammad 7.2.2**. The package prepends Zammad internals (see below), so every Zammad
 update must be re-verified by running the specs against the new version before upgrading.
 
+Developed and tested in Zammad's 7.2.2 development container (Docker). Installed and tested on a
+package install of Zammad 7.2.2 on Ubuntu 22.04 (jammy).
+
 ## Behavior
 
 - **Per group** – the feature is switched on per group (*Manage → Groups → edit → Participants*)
@@ -55,6 +58,8 @@ update must be re-verified by running the specs against the new version before u
   a password. Where the allowed domains are covered by a login source such as LDAP or SSO they
   can sign in right away; otherwise they have to use *Forgot password* first, or ask an agent
   to remove them. Limit the allowed domains accordingly.
+  Leaving ends only the access that comes from being a participant: a member of the ticket's
+  *shared* organization keeps seeing the ticket and can still reply, as before.
 - **API** – `GET|POST /api/v1/tickets/:ticket_id/participants`,
   `DELETE /api/v1/tickets/:ticket_id/participants/:id`. Email addresses of participants are
   only returned to agents of the ticket.
@@ -123,8 +128,8 @@ json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.5.2.zpm
 Install it on a package installation of Zammad:
 
 ```bash
-zammad run rails zammad:package:install /path/to/TicketParticipants-0.5.2.zpm
-zammad run rails zammad:package:post_install   # package migrations + asset rebuild
+zammad run rake zammad:package:install /path/to/TicketParticipants-0.5.2.zpm
+zammad run rake zammad:package:post_install   # package migrations + asset rebuild
 systemctl restart zammad
 ```
 
