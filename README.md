@@ -125,14 +125,5 @@ for f in p["files"]: f["content"]=base64.b64encode(open(f["location"],"rb").read
 json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.5.2.zpm
 ```
 
-Install it on a package installation of Zammad:
-
-```bash
-zammad run rake zammad:package:install /path/to/TicketParticipants-0.5.2.zpm
-zammad run rake zammad:package:post_install   # package migrations + asset rebuild
-systemctl restart zammad
-```
-
-See `README.production.md` for the full production runbook (checks, switching it on, roll
-back, Zammad updates). Docker installs need a derived image with the package files and
-recompiled classic assets instead; the stock image cannot rebuild them.
+Then install it as described in `INSTALL.md` (checks, install, switching it on, uninstall,
+updates).
