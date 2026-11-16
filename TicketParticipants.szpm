@@ -1,9 +1,9 @@
 {
   "name": "TicketParticipants",
   "version": "0.5.2",
-  "vendor": "dliafos",
+  "vendor": "DimitrisLiafos",
   "license": "proprietary",
-  "url": "https://github.com/dliafos/zammad-participants",
+  "url": "https://github.com/DimitrisLiafos/zammad-participants",
   "description": [
     {
       "language": "en",
