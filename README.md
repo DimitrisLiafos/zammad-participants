@@ -127,3 +127,7 @@ json.dump(p, open(sys.argv[1],"w"), indent=2)' ../TicketParticipants-0.5.2.zpm
 
 Then install it as described in `INSTALL.md` (checks, install, switching it on, uninstall,
 updates).
+
+## License
+
+GNU Affero General Public License v3.0, like Zammad itself. See `LICENSE`.

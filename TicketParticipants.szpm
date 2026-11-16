@@ -2,7 +2,7 @@
   "name": "TicketParticipants",
   "version": "0.5.2",
   "vendor": "DimitrisLiafos",
-  "license": "proprietary",
+  "license": "AGPL-3.0",
   "url": "https://github.com/DimitrisLiafos/zammad-participants",
   "description": [
     {
